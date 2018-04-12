@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">PracticeTime</string>
+
+    <string-array name="time_sigs">
+        <item>beat</item>
+        <item>4/4</item>
+        <item>3/4</item>
+        <item>6/8</item>
+        <item>9/8</item>
+        <item>2/4</item>
+    </string-array>
+</resources>
