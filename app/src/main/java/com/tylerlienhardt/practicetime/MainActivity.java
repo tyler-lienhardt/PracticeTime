@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView tempoDisplay;
     TextView timerDisplay;
 
+    Exercise exercise;
     Timer timer;
 
     @Override
@@ -37,18 +39,59 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         createSampleExercises();
 
-        // BUTTONS
-        // timer
+        // RECYCLER VIEW
+        recyclerView = (RecyclerView) findViewById(R.id.exercise_list);
+        recyclerView.setHasFixedSize(true);
+
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
+        recyclerAdapter = new ExerciseAdapter(this, exerciseList);
+        recyclerView.setAdapter(recyclerAdapter);
+
+        //For use with timer display and listener
+        exercise = exerciseList.get(recyclerAdapter.getPosition());
+        timer = new Timer(exercise.getStartTime(), 1000, this);
+
+        // DRAG REORDORING
+        DragHelper dragHelper = new DragHelper(recyclerAdapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(dragHelper);
+        recyclerAdapter.setTouchHelper(touchHelper);
+        touchHelper.attachToRecyclerView(recyclerView);
+
+
+        //DISPLAYS
+        //load data from first exercise by default
+        timerDisplay = findViewById(R.id.timer_display);
+        timerDisplay.setText(timer.timeToString(exercise.getStartTime()));
+
+        tempoDisplay = findViewById(R.id.tempo_display);
+        tempoDisplay.setText(String.valueOf(exercise.getTempo()));
+
+        // BUTTON LISTENERS
+        // timer buttons
         ImageButton timerPauseButton = (ImageButton)findViewById(R.id.timer_play_button);
         timerPauseButton.setOnClickListener(this);
 
         ImageButton timerResetButton = (ImageButton)findViewById(R.id.timer_reset_button);
         timerResetButton.setOnClickListener(this);
+        timerResetButton.setOnLongClickListener(new View.OnLongClickListener() {
+
+            // Long press on reset button resets timer to original time
+            @Override
+            public boolean onLongClick(View v) {
+                timer.cancelTimer();
+                exercise = exerciseList.get(recyclerAdapter.getPosition());
+                timer = new Timer(exercise.getStartTime(), 1000, MainActivity.this);
+                timerDisplay.setText(timer.timeToString(timer.getStartTime()));
+                return true;
+            }
+        });
 
         Button timerSetButton = (Button)findViewById(R.id.timer_set_button);
         timerSetButton.setOnClickListener(this);
 
-        // metronome
+        // metronome buttons
         ImageButton plus5Button = (ImageButton)findViewById(R.id.plus5_button);
         plus5Button.setOnClickListener(this);
 
@@ -73,28 +116,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         spinner.setAdapter(spinnerAdapter);
-
-        // RECYCLER VIEW
-        recyclerView = (RecyclerView) findViewById(R.id.exercise_list);
-        recyclerView.setHasFixedSize(true);
-
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-
-        recyclerAdapter = new ExerciseAdapter(this, exerciseList);
-        recyclerView.setAdapter(recyclerAdapter);
-
-        //DISPLAYS
-        //load data from first exercise by default
-        Exercise exercise = exerciseList.get(recyclerAdapter.getPosition());
-
-        timer = new Timer(exercise.getStartTime(), 1000, this);
-
-        timerDisplay = findViewById(R.id.timer_display);
-        timerDisplay.setText(timer.timeToString(exercise.getStartTime()));
-
-        tempoDisplay = findViewById(R.id.tempo_display);
-        tempoDisplay.setText(String.valueOf(exercise.getTempo()));
 
     }
 
@@ -123,8 +144,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 break;
 
+            //short press of reset button adds 30 seconds
             case R.id.timer_reset_button :
-                //short press adds 30 seconds
                 boolean wasCountingWhenPressed = timer.isCounting();
                 timer.cancelTimer();
                 timer = new Timer(timer.getRemainingTime() + 30000, 1000, this);
@@ -188,4 +209,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         exerciseList.add(new Exercise("Turkey in the straw", 120, 150000));
         exerciseList.add(new Exercise("Hava Nagila", 145, 150000));
     }
+
 }

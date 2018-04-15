@@ -17,7 +17,6 @@ public class Timer extends CountDownTimer{
     private long remainingTime;
     private boolean isCounting;
     private Context context;
-    private String displayString;
     private TextView timerDisplay;
 
     public Timer (long startTime, long interval, Context context) {
@@ -48,6 +47,10 @@ public class Timer extends CountDownTimer{
     @Override
     public void onFinish() {
         Toast.makeText(context, "TIME'S UP MOTHERFUCKER", Toast.LENGTH_SHORT).show();
+    }
+
+    public long getStartTime() {
+        return startTime;
     }
 
     public long getRemainingTime() {

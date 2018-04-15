@@ -2,8 +2,11 @@ package com.tylerlienhardt.practicetime;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -16,10 +19,12 @@ import java.util.ArrayList;
  * Created by Tyler on 4/1/2018.
  */
 
-public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHolder> {
+public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHolder> implements
+        DragHelper.ActionCompletionContract {
 
     ArrayList<Exercise> exerciseList = new ArrayList<Exercise>();
     Context context;
+    private ItemTouchHelper touchHelper;
     private int position = 0;
 
     public ExerciseAdapter (Context context, ArrayList<Exercise> exerciseList) {
@@ -29,7 +34,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private ImageView iconView;
+        private ImageView dragHandle;
         private TextView nameView;
         private TextView timeView;
         private TextView tempoView;
@@ -38,7 +43,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
             super(itemView);
             itemView.setOnClickListener(this);
 
-            iconView = itemView.findViewById(R.id.item_icon);
+            dragHandle = itemView.findViewById(R.id.item_drag_handle);
             nameView = itemView.findViewById(R.id.item_name);
             timeView = itemView.findViewById(R.id.item_time);
             tempoView = itemView.findViewById(R.id.item_tempo);
@@ -53,6 +58,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
 
         @Override
         public void onClick(View v) {
+
             MainActivity mainActivity = (MainActivity)context;
             mainActivity.switchExerciseForTimer(position, getAdapterPosition());
 
@@ -78,8 +84,18 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(ExerciseAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final ExerciseAdapter.ViewHolder holder, int position) {
         Exercise exercise = exerciseList.get(position);
+
+        holder.dragHandle.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch (View view, MotionEvent event) {
+                if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                    touchHelper.startDrag(holder);
+                }
+                return false;
+            }
+        });
 
         holder.bind(exercise);
     }
@@ -91,6 +107,18 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
 
     public int getPosition(){
         return position;
+    }
+
+
+    public void onViewMoved(int oldPosition, int newPosition) {
+        Exercise targetExercise = exerciseList.get(oldPosition);
+        exerciseList.remove(targetExercise);
+        exerciseList.add(newPosition, targetExercise);
+        notifyItemMoved(oldPosition, newPosition);
+    }
+
+    public void setTouchHelper(ItemTouchHelper touchHelper){
+        this.touchHelper = touchHelper;
     }
 
 }
