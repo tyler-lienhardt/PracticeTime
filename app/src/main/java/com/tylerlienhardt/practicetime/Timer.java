@@ -46,7 +46,7 @@ public class Timer extends CountDownTimer{
 
     @Override
     public void onFinish() {
-        Toast.makeText(context, "TIME'S UP MOTHERFUCKER", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "Done!", Toast.LENGTH_SHORT).show();
     }
 
     public long getStartTime() {

@@ -128,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+
         int position = recyclerAdapter.getPosition();
         Exercise exercise = exerciseList.get(position);
 
@@ -203,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void createSampleExercises() {
-        exerciseList.add(new Exercise("Bb scales asc/desc", 65, 600000));
+        exerciseList.add(new Exercise("Bb scales asc/desc", 65, 4000));
         exerciseList.add(new Exercise("Am arpeggios", 80, 900000));
         exerciseList.add(new Exercise("Am scales asc/desc", 88, 300000));
         exerciseList.add(new Exercise("Turkey in the straw", 120, 150000));

@@ -93,8 +93,11 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
                 if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                     touchHelper.startDrag(holder);
                 }
+                //once a draghandle is clicked, the item being dragged is selected
+                holder.onClick(view);
                 return false;
             }
+
         });
 
         holder.bind(exercise);
@@ -115,6 +118,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
         exerciseList.remove(targetExercise);
         exerciseList.add(newPosition, targetExercise);
         notifyItemMoved(oldPosition, newPosition);
+        position = newPosition;
     }
 
     public void setTouchHelper(ItemTouchHelper touchHelper){
