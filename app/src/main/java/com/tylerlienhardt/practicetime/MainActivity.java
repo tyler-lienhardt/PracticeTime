@@ -1,5 +1,7 @@
 package com.tylerlienhardt.practicetime;
 
+import android.content.Intent;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +21,9 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    static final int EDIT_EXERCISE_REQUEST_CODE = 5;
+    static final int EDIT_EXERCISE_RESULT_SAVE = 4;
+
     private ArrayList<Exercise> exerciseList = new ArrayList<Exercise>();
     private RecyclerView recyclerView;
     private ExerciseAdapter recyclerAdapter;
@@ -26,6 +31,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     TextView tempoDisplay;
     TextView timerDisplay;
+
+    ImageButton timerPlayButton;
 
     Exercise exercise;
     Timer timer;
@@ -70,18 +77,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // BUTTON LISTENERS
         // timer buttons
-        ImageButton timerPauseButton = (ImageButton)findViewById(R.id.timer_play_button);
-        timerPauseButton.setOnClickListener(this);
+
+        //timerPlayButton is global so onClick can reach it
+        timerPlayButton = (ImageButton)findViewById(R.id.timer_play_button);
+        timerPlayButton.setOnClickListener(this);
 
         ImageButton timerResetButton = (ImageButton)findViewById(R.id.timer_reset_button);
         timerResetButton.setOnClickListener(this);
+
+        // long press on reset button pauses timer and resets to start time
         timerResetButton.setOnLongClickListener(new View.OnLongClickListener() {
 
-            // Long press on reset button resets timer to original time
             @Override
             public boolean onLongClick(View v) {
                 timer.cancelTimer();
                 exercise = exerciseList.get(recyclerAdapter.getPosition());
+                exercise.setRemainingTime(exercise.getStartTime());
                 timer = new Timer(exercise.getStartTime(), 1000, MainActivity.this);
                 timerDisplay.setText(timer.timeToString(timer.getStartTime()));
                 return true;
@@ -191,8 +202,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    //FIXME remaingTime is being saved to the wrong exercise.
-    //Position is being updated before this method call, but should be after
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == EDIT_EXERCISE_REQUEST_CODE) {
+            if (resultCode == EDIT_EXERCISE_RESULT_SAVE){
+                int position = recyclerAdapter.getPosition();
+
+                Exercise exercise = exerciseList.get(position);
+
+                exercise.setName(intent.getStringExtra("name"));
+                //exercise.setStartTime(intent.getLongExtra("time"));
+
+                System.out.println(intent.getStringExtra("time"));
+                //Timer.stringToTime(intent.getStringExtra("time"));
+            }
+        }
+
+    }
+
     public void switchExerciseForTimer(int prevPosition, int newPosition) {
         timer.cancelTimer();
 

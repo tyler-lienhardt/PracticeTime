@@ -3,9 +3,11 @@ package com.tylerlienhardt.practicetime;
 import android.app.Activity;
 import android.content.Context;
 import android.os.CountDownTimer;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -18,6 +20,7 @@ public class Timer extends CountDownTimer{
     private boolean isCounting;
     private Context context;
     private TextView timerDisplay;
+    private ImageButton timerPlayButton;
 
     public Timer (long startTime, long interval, Context context) {
         super(startTime, interval);
@@ -25,8 +28,8 @@ public class Timer extends CountDownTimer{
         this.remainingTime = startTime;
         this.context = context;
 
-
         timerDisplay = ((Activity) context).findViewById(R.id.timer_display);
+        timerPlayButton = ((Activity) context).findViewById(R.id.timer_play_button);
     }
 
     public static String timeToString(long millisUntilFinished) {
@@ -35,6 +38,20 @@ public class Timer extends CountDownTimer{
         seconds = seconds % 60;
 
         return String.format("%d:%02d", minutes, seconds);
+    }
+
+    public static long stringToTime(String timeString) {
+
+        String testString = "11:22";
+        Scanner scanner = new Scanner(testString);
+        scanner.useDelimiter(":");
+
+        long minutes = scanner.nextLong();
+        long seconds = scanner.nextLong();
+
+        System.out.println("MINUTES = " + minutes + " .... SECONDS = " + seconds);
+
+        return 0;
     }
 
     @Override
@@ -71,11 +88,13 @@ public class Timer extends CountDownTimer{
 
     public void startTimer() {
         start();
+        timerPlayButton.setImageResource(android.R.drawable.ic_media_pause);
         isCounting = true;
     }
 
     public void cancelTimer() {
         cancel();
+        timerPlayButton.setImageResource(android.R.drawable.ic_media_play);
         isCounting = false;
     }
 }

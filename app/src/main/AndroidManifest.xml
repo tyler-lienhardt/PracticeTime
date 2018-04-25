@@ -13,14 +13,20 @@
             android:name=".MainActivity"
             android:label="Practice Time"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
-
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".EditActivity"
+            android:label="@string/title_activity_edit"
+            android:parentActivityName="com.tylerlienhardt.practicetime.MainActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
     </application>
 
 </manifest>

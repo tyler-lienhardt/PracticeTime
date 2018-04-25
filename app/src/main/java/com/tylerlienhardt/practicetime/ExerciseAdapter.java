@@ -2,6 +2,7 @@ package com.tylerlienhardt.practicetime;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -22,8 +23,8 @@ import java.util.ArrayList;
 public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHolder> implements
         DragHelper.ActionCompletionContract {
 
-    ArrayList<Exercise> exerciseList = new ArrayList<Exercise>();
-    Context context;
+    private ArrayList<Exercise> exerciseList = new ArrayList<Exercise>();
+    private Context context;
     private ItemTouchHelper touchHelper;
     private int position = 0;
 
@@ -32,7 +33,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
         this.context = context;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         private ImageView dragHandle;
         private TextView nameView;
@@ -42,6 +43,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
         public ViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
 
             dragHandle = itemView.findViewById(R.id.item_drag_handle);
             nameView = itemView.findViewById(R.id.item_name);
@@ -73,11 +75,29 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
             TextView tempoDisplay = (TextView) ((Activity) context).findViewById(R.id.tempo_display);
             tempoDisplay.setText(String.valueOf(exercise.getTempo()));
         }
+
+        //long click on item opens edit-item activity
+        @Override
+        public boolean onLongClick(View v) {
+            onClick(v);
+
+            Intent intent = new Intent(v.getContext(), EditActivity.class);
+
+            Exercise exercise = exerciseList.get(position);
+
+            intent.putExtra("name", exercise.getName());
+            intent.putExtra("startTime", exercise.getStartTime());
+
+            ((Activity) context).startActivityForResult(intent, MainActivity.EDIT_EXERCISE_REQUEST_CODE);
+
+            return false;
+        }
     }
 
     @Override
     public ExerciseAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View cellView = LayoutInflater.from(parent.getContext()).inflate(R.layout.exercise_item, parent, false);
+        View cellView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.exercise_item, parent, false);
 
         ViewHolder holder = new ViewHolder(cellView);
         return holder;
@@ -87,6 +107,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
     public void onBindViewHolder(final ExerciseAdapter.ViewHolder holder, int position) {
         Exercise exercise = exerciseList.get(position);
 
+        //drag and drop reordering listener
         holder.dragHandle.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch (View view, MotionEvent event) {

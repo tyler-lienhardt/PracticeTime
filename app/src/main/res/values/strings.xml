@@ -9,4 +9,5 @@
         <item>9/8</item>
         <item>2/4</item>
     </string-array>
+    <string name="title_activity_edit">EditActivity</string>
 </resources>

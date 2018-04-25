@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.tylerlienhardt.practicetime.EditActivity"
+    tools:showIn="@layout/activity_edit">
+
+    <LinearLayout
+        android:id="@+id/edit_master_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/edit_name_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Exercise Name" />
+
+        <EditText
+            android:id="@+id/edit_name_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Add Name"
+            android:inputType="textNoSuggestions"
+            android:singleLine="true" />
+
+        <TextView
+            android:id="@+id/edit_YT_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="YouTube Link" />
+
+        <EditText
+            android:id="@+id/edit_YT_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Add Link"
+            android:inputType="textNoSuggestions"
+            android:singleLine="true" />
+
+        <LinearLayout
+            android:id="@+id/edit_timer_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/edit_timer_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:text="Timer" />
+
+            <EditText
+                android:id="@+id/edit_time_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="10"
+                android:ems="10"
+                android:hint="00:00"
+                android:inputType="time" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/edit_metro_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/edit_tempo_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_weight="1"
+                android:text="Tempo" />
+
+            <NumberPicker
+                android:id="@+id/numberPicker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/edit_rec_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/record_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_weight="1"
+                android:text="Enable Recording" />
+
+            <Switch
+                android:id="@+id/record_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Switch" />
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/record_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+        </android.support.v7.widget.RecyclerView>
+
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>
