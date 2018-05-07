@@ -7,6 +7,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,10 +17,19 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 public class EditActivity extends AppCompatActivity {
 
     private EditText nameField;
     private EditText timeField;
+    private EditText tempoField;
+
+    private ArrayList<Recording> recordingList = new ArrayList<Recording>();
+
+    private RecyclerView recyclerView;
+    private RecordingAdapter recordingAdapter;
+    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +52,21 @@ public class EditActivity extends AppCompatActivity {
         long startTime = intent.getLongExtra("startTime", -1);
         timeField.setText(Timer.timeToString(startTime));
 
+        tempoField = findViewById(R.id.edit_tempo_field);
+        tempoField.setText(String.valueOf(intent.getIntExtra("tempo", -1)));
+
+        //FIXME Sample recordings
+        createSampleRecordings();
+
+        //RECORDING RECYCLER VIEW
+        recyclerView = (RecyclerView)findViewById(R.id.record_recycler);
+        recyclerView.setHasFixedSize(true);
+
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
+        recordingAdapter = new RecordingAdapter(recordingList);
+        recyclerView.setAdapter(recordingAdapter);
     }
 
     @Override
@@ -67,12 +93,14 @@ public class EditActivity extends AppCompatActivity {
                 }
 
                 Intent intent = new Intent(EditActivity.this, MainActivity.class);
-                intent.putExtra("name", nameField.getText());
 
-                //long time = Timer.stringToTime(timeField.getText());
-                intent.putExtra("time", timeField.getText());
 
-                System.out.println(timeField.getText());
+                intent.putExtra("name", nameField.getText().toString());
+
+                long time = Timer.stringToTime(timeField.getText().toString());
+                intent.putExtra("time", time);
+
+                intent.putExtra("tempo", Integer.valueOf(tempoField.getText().toString()).intValue());
 
                 setResult(MainActivity.EDIT_EXERCISE_RESULT_SAVE, intent);
                 finish();
@@ -81,5 +109,13 @@ public class EditActivity extends AppCompatActivity {
                 return true;
         }
 
+    }
+
+    public void createSampleRecordings() {
+        Recording rec1 = new Recording("recording 1");
+        Recording rec2 = new Recording("recording 2");
+
+        recordingList.add(rec1);
+        recordingList.add(rec2);
     }
 }

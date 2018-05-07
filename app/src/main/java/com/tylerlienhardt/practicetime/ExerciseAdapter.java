@@ -3,13 +3,13 @@ package com.tylerlienhardt.practicetime;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,6 +27,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
     private Context context;
     private ItemTouchHelper touchHelper;
     private int position = 0;
+    private int selectedPos = 0;
 
     public ExerciseAdapter (Context context, ArrayList<Exercise> exerciseList) {
         this.exerciseList = exerciseList;
@@ -39,41 +40,52 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
         private TextView nameView;
         private TextView timeView;
         private TextView tempoView;
+        private ImageButton doublePlayButton;
+        private ImageButton doublePauseButton;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
 
             dragHandle = itemView.findViewById(R.id.item_drag_handle);
             nameView = itemView.findViewById(R.id.item_name);
             timeView = itemView.findViewById(R.id.item_time);
             tempoView = itemView.findViewById(R.id.item_tempo);
+            doublePlayButton = itemView.findViewById(R.id.double_play_button);
+            doublePauseButton = itemView.findViewById(R.id.double_pause_button);
+
+            doublePlayButton.setOnClickListener(this);
+            doublePauseButton.setOnClickListener(this);
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         public void bind(Exercise exercise) {
             nameView.setText(exercise.getName());
             timeView.setText(String.valueOf(Timer.timeToString(exercise.getStartTime())));
             tempoView.setText(String.valueOf(exercise.getTempo()));
-
         }
 
         @Override
         public void onClick(View v) {
 
-            MainActivity mainActivity = (MainActivity)context;
-            mainActivity.switchExerciseForTimer(position, getAdapterPosition());
+            //notifying to change view to selected state, changing colors
+            notifyItemChanged(selectedPos);
+            selectedPos = getLayoutPosition();
+            notifyItemChanged(selectedPos);
 
-            position = getAdapterPosition();
-            Exercise exercise = exerciseList.get(position);
+            Exercise exercise = exerciseList.get(getAdapterPosition());
 
-            //setting the main timer display
-            TextView timerDisplay = (TextView) ((Activity) context).findViewById(R.id.timer_display);
-            timerDisplay.setText(Timer.timeToString(exercise.getRemainingTime()));
+            ((MainActivity)context).setAllToExercise(exercise);
 
-            //setting the main metro display
-            TextView tempoDisplay = (TextView) ((Activity) context).findViewById(R.id.tempo_display);
-            tempoDisplay.setText(String.valueOf(exercise.getTempo()));
+            position = getAdapterPosition(); //updates position for the adapter
+
+            if (v.getId() == R.id.double_play_button) {
+                ((MainActivity)context).doublePlayAction();
+            }
+
+            if (v.getId() == R.id.double_pause_button) {
+                ((MainActivity)context).doublePauseAction();
+            }
         }
 
         //long click on item opens edit-item activity
@@ -87,6 +99,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
 
             intent.putExtra("name", exercise.getName());
             intent.putExtra("startTime", exercise.getStartTime());
+            intent.putExtra("tempo", exercise.getTempo());
 
             ((Activity) context).startActivityForResult(intent, MainActivity.EDIT_EXERCISE_REQUEST_CODE);
 
@@ -105,6 +118,8 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(final ExerciseAdapter.ViewHolder holder, int position) {
+        holder.itemView.setSelected(selectedPos == position);
+
         Exercise exercise = exerciseList.get(position);
 
         //drag and drop reordering listener
@@ -115,7 +130,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
                     touchHelper.startDrag(holder);
                 }
                 //once a draghandle is clicked, the item being dragged is selected
-                holder.onClick(view);
+                //holder.onClick(view);
                 return false;
             }
 
@@ -135,11 +150,16 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
 
 
     public void onViewMoved(int oldPosition, int newPosition) {
+        int currentPosition = position;
+        Exercise currentExercise = exerciseList.get(currentPosition);
+
         Exercise targetExercise = exerciseList.get(oldPosition);
         exerciseList.remove(targetExercise);
         exerciseList.add(newPosition, targetExercise);
         notifyItemMoved(oldPosition, newPosition);
-        position = newPosition;
+
+        position = exerciseList.indexOf(currentExercise);
+        selectedPos = position;
     }
 
     public void setTouchHelper(ItemTouchHelper touchHelper){

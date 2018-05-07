@@ -3,16 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/item_cell_layout"
     android:layout_width="match_parent"
-    android:layout_height="50dp">
+    android:layout_height="50dp"
+    android:layout_marginBottom="2dp"
+    android:layout_marginTop="2dp"
+    android:background="@drawable/selected_item_color"
+    android:elevation="1dp">
 
     <ImageView
         android:id="@+id/item_drag_handle"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_weight="8"
-        app:srcCompat="@android:drawable/ic_lock_idle_alarm" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp"
+        android:tint="@color/selected_button_press"
+        app:srcCompat="@drawable/draghandle" />
 
     <LinearLayout
         android:id="@+id/item_info_name_layout"
@@ -35,7 +43,8 @@
                 android:layout_marginRight="20dp"
                 android:layout_weight="2"
                 android:gravity="right"
-                android:text="10:00" />
+                android:text="10:00"
+                android:textColor="@drawable/selected_text_color" />
 
             <TextView
                 android:id="@+id/item_tempo"
@@ -44,7 +53,8 @@
                 android:layout_weight="2"
                 android:gravity="left"
                 android:paddingLeft="20dp"
-                android:text="80bpm" />
+                android:text="80bpm"
+                android:textColor="@drawable/selected_text_color" />
         </LinearLayout>
 
         <TextView
@@ -54,7 +64,34 @@
             android:layout_marginLeft="10dp"
             android:layout_weight="3"
             android:text="Gb scale asc/desc"
+            android:textColor="@drawable/selected_text_color"
             android:textSize="18sp" />
 
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/double_pause_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="7dp"
+        android:layout_marginTop="7dp"
+        android:layout_weight="0"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        android:tint="@color/selected_button_press"
+        app:srcCompat="@drawable/double_pause_button" />
+
+    <ImageButton
+        android:id="@+id/double_play_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="7dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="7dp"
+        android:layout_weight="0"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        android:tint="@color/selected_button_press"
+        app:srcCompat="@drawable/double_play_button" />
+
 </LinearLayout>

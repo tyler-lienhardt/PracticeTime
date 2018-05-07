@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -21,13 +22,17 @@ public class RecordingAdapter extends RecyclerView.Adapter<RecordingAdapter.View
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
+        private TextView nameView;
+
         public ViewHolder (View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
+
+            nameView = itemView.findViewById(R.id.recording_item_name);
         }
 
         public void bind (Recording recording) {
-
+            nameView.setText(recording.getName());
         }
 
         @Override

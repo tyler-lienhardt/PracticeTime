@@ -21,12 +21,19 @@ public class Exercise {
         this.remainingTime = startTime;
     }
 
+    public void resetRemainingTime() {
+        remainingTime = startTime;
+    }
+
     public long getStartTime() {
         return startTime;
     }
 
     public void setStartTime(long startTime) {
         this.startTime = startTime;
+
+        //resets the timer
+        this.remainingTime = startTime;
     }
 
     public String getName() {

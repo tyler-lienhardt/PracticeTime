@@ -84,17 +84,20 @@
 
             <TextView
                 android:id="@+id/edit_tempo_label"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left|center_vertical"
-                android:layout_weight="1"
+                android:layout_weight="5"
                 android:text="Tempo" />
 
-            <NumberPicker
-                android:id="@+id/numberPicker"
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/edit_tempo_field"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="10"
+                android:ems="10"
+                android:inputType="number"
+                android:text="80" />
 
         </LinearLayout>
 

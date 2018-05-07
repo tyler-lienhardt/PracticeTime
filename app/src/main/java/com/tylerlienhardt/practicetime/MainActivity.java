@@ -1,7 +1,6 @@
 package com.tylerlienhardt.practicetime;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,13 +28,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ExerciseAdapter recyclerAdapter;
     private RecyclerView.LayoutManager layoutManager;
 
-    TextView tempoDisplay;
     TextView timerDisplay;
-
+    TextView nameDisplay;
+    TextView tempoDisplay;
     ImageButton timerPlayButton;
+    ImageButton doublePlayButton;
 
-    Exercise exercise;
     Timer timer;
+    Metronome metro;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,29 +56,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         recyclerAdapter = new ExerciseAdapter(this, exerciseList);
         recyclerView.setAdapter(recyclerAdapter);
 
-        //For use with timer display and listener
-        exercise = exerciseList.get(recyclerAdapter.getPosition());
-        timer = new Timer(exercise.getStartTime(), 1000, this);
-
         // DRAG REORDORING
         DragHelper dragHelper = new DragHelper(recyclerAdapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(dragHelper);
         recyclerAdapter.setTouchHelper(touchHelper);
         touchHelper.attachToRecyclerView(recyclerView);
 
-
         //DISPLAYS
-        //load data from first exercise by default
+        nameDisplay = findViewById(R.id.name_display);
         timerDisplay = findViewById(R.id.timer_display);
-        timerDisplay.setText(timer.timeToString(exercise.getStartTime()));
-
         tempoDisplay = findViewById(R.id.tempo_display);
-        tempoDisplay.setText(String.valueOf(exercise.getTempo()));
 
-        // BUTTON LISTENERS
-        // timer buttons
+        //load data from the first exercise in the list by default
+        Exercise exercise = getSelectedExercise();
+        setAllToExercise(exercise);
 
-        //timerPlayButton is global so onClick can reach it
+
+        // TIMER BUTTONS
+
         timerPlayButton = (ImageButton)findViewById(R.id.timer_play_button);
         timerPlayButton.setOnClickListener(this);
 
@@ -90,11 +85,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             @Override
             public boolean onLongClick(View v) {
-                timer.cancelTimer();
-                exercise = exerciseList.get(recyclerAdapter.getPosition());
-                exercise.setRemainingTime(exercise.getStartTime());
-                timer = new Timer(exercise.getStartTime(), 1000, MainActivity.this);
-                timerDisplay.setText(timer.timeToString(timer.getStartTime()));
+                if (timer.isCounting()){
+                    timer.cancelTimer();
+                }
+
+                Exercise exercise = getSelectedExercise();
+                exercise.resetRemainingTime();
+                setExerciseForTimer(exercise);
                 return true;
             }
         });
@@ -102,7 +99,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button timerSetButton = (Button)findViewById(R.id.timer_set_button);
         timerSetButton.setOnClickListener(this);
 
-        // metronome buttons
+        // METRONOME BUTTONS
+
+        ImageButton metroPlayButton = (ImageButton)findViewById(R.id.metro_play_button);
+        metroPlayButton.setOnClickListener(this);
+
         ImageButton plus5Button = (ImageButton)findViewById(R.id.plus5_button);
         plus5Button.setOnClickListener(this);
 
@@ -131,68 +132,82 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
     public void onClick(View v) {
 
-        int position = recyclerAdapter.getPosition();
-        Exercise exercise = exerciseList.get(position);
+        Exercise exercise = getSelectedExercise();
 
         switch (v.getId()) {
+
+            //TIMER BUTTONS
+
             case R.id.timer_play_button :
+
                 if (timer.isCounting()){
                     timer.cancelTimer();
-                    exercise.setRemainingTime(timer.getRemainingTime());
                 }
                 else {
-                    timer = new Timer(exercise.getRemainingTime(), 1000, this);
+                    setExerciseForTimer(exercise);
                     timer.startTimer();
                 }
 
                 break;
 
-            //short press of reset button adds 30 seconds
+            //short press adds 30 seconds
             case R.id.timer_reset_button :
+
                 boolean wasCountingWhenPressed = timer.isCounting();
+
                 timer.cancelTimer();
-                timer = new Timer(timer.getRemainingTime() + 30000, 1000, this);
-                timerDisplay.setText(Timer.timeToString(timer.getRemainingTime()));
-                exercise.setRemainingTime(timer.getRemainingTime());
+
+                //adding 30 seconds
+                exercise.setRemainingTime(exercise.getRemainingTime() + 30000);
+                setExerciseForTimer(exercise);
+
+                //adding 30 seconds does not stop the counter
                 if (wasCountingWhenPressed) {
                     timer.startTimer();
                 }
+
                 break;
 
             case R.id.timer_set_button :
                 break;
 
+            //METRO BUTTONS
+
+            case R.id.metro_play_button :
+
+                if (metro.isRunning() == false) {
+                    setExerciseForMetro(exercise);
+                    metro.start();
+                }
+                else {
+                    metro.stopRunning();
+                }
+                break;
+
             case R.id.plus5_button :
-                exercise.changeTempo(5);
-                recyclerAdapter.notifyItemChanged(position);
-                tempoDisplay.setText(String.valueOf(exercise.getTempo()));
+
+                metro.adjustTempo(5);
+                updateTempoDisplays(exercise);
                 break;
 
             case R.id.plus1_button :
-                exercise.changeTempo(1);
-                recyclerAdapter.notifyItemChanged(position);
-                tempoDisplay.setText(String.valueOf(exercise.getTempo()));
+
+                metro.adjustTempo(1);
+                updateTempoDisplays(exercise);
                 break;
 
             case R.id.minus1_button :
-                exercise.changeTempo(-1);
-                recyclerAdapter.notifyItemChanged(position);
-                tempoDisplay.setText(String.valueOf(exercise.getTempo()));
+
+                metro.adjustTempo(-1);
+                updateTempoDisplays(exercise);
                 break;
 
             case R.id.minus5_button :
-                exercise.changeTempo(-5);
-                recyclerAdapter.notifyItemChanged(position);
-                tempoDisplay.setText(String.valueOf(exercise.getTempo()));
+
+                metro.adjustTempo(-5);
+                updateTempoDisplays(exercise);
                 break;
 
             case R.id.metro_sound_button :
@@ -203,32 +218,116 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == EDIT_EXERCISE_REQUEST_CODE) {
             if (resultCode == EDIT_EXERCISE_RESULT_SAVE){
-                int position = recyclerAdapter.getPosition();
 
-                Exercise exercise = exerciseList.get(position);
+                String name = intent.getStringExtra("name");
+                int tempo = intent.getIntExtra("tempo", -1);
+                long time = intent.getLongExtra("time", -1);
 
-                exercise.setName(intent.getStringExtra("name"));
-                //exercise.setStartTime(intent.getLongExtra("time"));
+                Exercise exercise = getSelectedExercise();
 
-                System.out.println(intent.getStringExtra("time"));
-                //Timer.stringToTime(intent.getStringExtra("time"));
+                exercise.setName(name);
+                exercise.setTempo(tempo);
+                exercise.setStartTime(time);
+
+                setAllToExercise(exercise);
             }
         }
 
     }
 
-    public void switchExerciseForTimer(int prevPosition, int newPosition) {
-        timer.cancelTimer();
-
-        Exercise prevExercise = exerciseList.get(prevPosition);
-        prevExercise.setRemainingTime(timer.getRemainingTime());
-
-        Exercise newExercise = exerciseList.get(newPosition);
-        timer = new Timer(newExercise.getRemainingTime(), 1000, this);
+    public Exercise getSelectedExercise() {
+        int position = recyclerAdapter.getPosition();
+        return exerciseList.get(position);
     }
+
+    public void setAllToExercise(Exercise exercise) {
+        setNameDisplay(exercise);
+        setExerciseForTimer(exercise);
+        setExerciseForMetro(exercise);
+    }
+
+    public void setNameDisplay(Exercise exercise) {
+        nameDisplay.setText(exercise.getName());
+    }
+
+    public void setExerciseForTimer(Exercise exercise) {
+        stopTimerIfRunning();
+        timer = new Timer(exercise.getRemainingTime(), exercise, this);
+        updateTimerDisplays(exercise);
+    }
+
+    public void setExerciseForMetro(Exercise exercise) {
+        stopMetroIfRunning();
+        metro = new Metronome(exercise, this);
+        updateTempoDisplays(exercise);
+    }
+
+    public void updateTimerDisplays(Exercise exercise) {
+        recyclerAdapter.notifyItemChanged(recyclerAdapter.getPosition());
+        timerDisplay.setText(Timer.timeToString(exercise.getRemainingTime()));
+    }
+
+    public void updateTempoDisplays(Exercise exercise) {
+        recyclerAdapter.notifyItemChanged(recyclerAdapter.getPosition());
+        tempoDisplay.setText(String.valueOf(exercise.getTempo()));
+    }
+
+    public void doublePlayAction() {
+
+        if (!timer.isCounting() && !metro.isRunning()) {
+            timer.startTimer();
+            metro.start();
+        }
+        else if (!timer.isCounting() && metro.isRunning()){
+            timer.startTimer();
+        }
+        else if (timer.isCounting() && !metro.isRunning()) {
+            metro.start();
+        }
+    }
+
+    public void doublePauseAction(){
+        if (timer.isCounting() && metro.isRunning()) {
+            timer.cancelTimer();
+            metro.stopRunning();
+        }
+        else if (!timer.isCounting() && metro.isRunning()){
+            metro.stopRunning();
+        }
+        else if (timer.isCounting() && !metro.isRunning()) {
+            timer.cancelTimer();
+        }
+    }
+
+    public void stopTimerIfRunning() {
+        if (timer != null && timer.isCounting()) {
+            timer.cancelTimer();
+        }
+    }
+
+    public void stopMetroIfRunning() {
+        if (metro != null && metro.isRunning()) {
+            metro.stopRunning();
+        }
+    }
+
+    public void notifyTimerFinished() {
+        stopMetroIfRunning();
+        Exercise exercise = getSelectedExercise();
+        setExerciseForTimer(getSelectedExercise());
+        Toast.makeText(this, "Done!", Toast.LENGTH_SHORT).show();
+    }
+
 
     private void createSampleExercises() {
         exerciseList.add(new Exercise("Bb scales asc/desc", 65, 4000));
