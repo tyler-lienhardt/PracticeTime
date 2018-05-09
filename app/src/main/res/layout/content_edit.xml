@@ -1,61 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:background="@color/colorBackground"
+    android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.tylerlienhardt.practicetime.EditActivity"
     tools:showIn="@layout/activity_edit">
 
     <LinearLayout
-        android:id="@+id/edit_master_layout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:id="@+id/input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:elevation="6dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="8dp">
 
-        <TextView
-            android:id="@+id/edit_name_label"
+        <LinearLayout
+            android:id="@+id/name_input_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Exercise Name" />
+            android:layout_height="70dp"
+            android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/edit_name_field"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Add Name"
-            android:inputType="textNoSuggestions"
-            android:singleLine="true" />
+            <TextView
+                android:id="@+id/edit_name_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Exercise Name" />
 
-        <TextView
-            android:id="@+id/edit_YT_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="YouTube Link" />
-
-        <EditText
-            android:id="@+id/edit_YT_field"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Add Link"
-            android:inputType="textNoSuggestions"
-            android:singleLine="true" />
+            <EditText
+                android:id="@+id/edit_name_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Add Name"
+                android:inputType="textNoSuggestions"
+                android:singleLine="true" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/edit_timer_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:orientation="horizontal">
 
             <TextView
@@ -79,7 +72,7 @@
         <LinearLayout
             android:id="@+id/edit_metro_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:orientation="horizontal">
 
             <TextView
@@ -88,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="left|center_vertical"
                 android:layout_weight="5"
-                android:text="Tempo" />
+                android:text="BPM" />
 
             <EditText
                 android:id="@+id/edit_tempo_field"
@@ -96,15 +89,41 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="10"
                 android:ems="10"
-                android:inputType="number"
-                android:text="80" />
+                android:hint="Enter bpm"
+                android:inputType="number" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/edit_measure_layout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_weight="5"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/edit_measure_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left|center_vertical"
+                android:layout_weight="5"
+                android:text="Beats per measure" />
+
+            <EditText
+                android:id="@+id/edit_measure_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="10"
+                android:ems="10"
+                android:hint="Enter beats"
+                android:inputType="number" />
 
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/edit_rec_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:orientation="horizontal">
 
             <TextView
@@ -121,14 +140,25 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Switch" />
+
         </LinearLayout>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/record_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-
-        </android.support.v7.widget.RecyclerView>
-
     </LinearLayout>
-</android.support.constraint.ConstraintLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/record_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_weight="1"
+        android:background="@color/colorBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </android.support.v7.widget.RecyclerView>
+</LinearLayout>
+

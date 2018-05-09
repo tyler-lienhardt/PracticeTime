@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private RecyclerView recyclerView;
     private ExerciseAdapter recyclerAdapter;
     private RecyclerView.LayoutManager layoutManager;
+    Spinner spinner;
 
     TextView timerDisplay;
     TextView nameDisplay;
@@ -69,66 +71,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //load data from the first exercise in the list by default
         Exercise exercise = getSelectedExercise();
+
+        createBeatSpinner();
+        setButtonListeners();
         setAllToExercise(exercise);
-
-
-        // TIMER BUTTONS
-
-        timerPlayButton = (ImageButton)findViewById(R.id.timer_play_button);
-        timerPlayButton.setOnClickListener(this);
-
-        ImageButton timerResetButton = (ImageButton)findViewById(R.id.timer_reset_button);
-        timerResetButton.setOnClickListener(this);
-
-        // long press on reset button pauses timer and resets to start time
-        timerResetButton.setOnLongClickListener(new View.OnLongClickListener() {
-
-            @Override
-            public boolean onLongClick(View v) {
-                if (timer.isCounting()){
-                    timer.cancelTimer();
-                }
-
-                Exercise exercise = getSelectedExercise();
-                exercise.resetRemainingTime();
-                setExerciseForTimer(exercise);
-                return true;
-            }
-        });
-
-        Button timerSetButton = (Button)findViewById(R.id.timer_set_button);
-        timerSetButton.setOnClickListener(this);
-
-        // METRONOME BUTTONS
-
-        ImageButton metroPlayButton = (ImageButton)findViewById(R.id.metro_play_button);
-        metroPlayButton.setOnClickListener(this);
-
-        ImageButton plus5Button = (ImageButton)findViewById(R.id.plus5_button);
-        plus5Button.setOnClickListener(this);
-
-        ImageButton plus1Button = (ImageButton)findViewById(R.id.plus1_button);
-        plus1Button.setOnClickListener(this);
-
-        ImageButton minus1Button = (ImageButton)findViewById(R.id.minus1_button);
-        minus1Button.setOnClickListener(this);
-
-        ImageButton minus5Button = (ImageButton)findViewById(R.id.minus5_button);
-        minus5Button.setOnClickListener(this);
-
-        Button metroSoundButton = (Button)findViewById(R.id.metro_sound_button);
-        metroSoundButton.setOnClickListener(this);
-
-        //creating the time signature spinner
-        Spinner spinner = (Spinner) findViewById(R.id.time_sig_spinner);
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this,
-                R.array.time_sigs, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        // Apply the adapter to the spinner
-        spinner.setAdapter(spinnerAdapter);
-
     }
 
     @Override
@@ -230,14 +176,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (resultCode == EDIT_EXERCISE_RESULT_SAVE){
 
                 String name = intent.getStringExtra("name");
-                int tempo = intent.getIntExtra("tempo", -1);
-                long time = intent.getLongExtra("time", -1);
+                long time = intent.getLongExtra("time", 9000);
+                int tempo = intent.getIntExtra("tempo", 99);
+                int measure = intent.getIntExtra("measure", 9);
 
                 Exercise exercise = getSelectedExercise();
 
                 exercise.setName(name);
                 exercise.setTempo(tempo);
                 exercise.setStartTime(time);
+                exercise.setMeasure(measure);
 
                 setAllToExercise(exercise);
             }
@@ -252,8 +200,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public void setAllToExercise(Exercise exercise) {
         setNameDisplay(exercise);
+        spinner.setSelection(exercise.getMeasure() - 1);
         setExerciseForTimer(exercise);
         setExerciseForMetro(exercise);
+
     }
 
     public void setNameDisplay(Exercise exercise) {
@@ -269,6 +219,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void setExerciseForMetro(Exercise exercise) {
         stopMetroIfRunning();
         metro = new Metronome(exercise, this);
+
         updateTempoDisplays(exercise);
     }
 
@@ -283,7 +234,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void doublePlayAction() {
-
         if (!timer.isCounting() && !metro.isRunning()) {
             timer.startTimer();
             metro.start();
@@ -324,17 +274,101 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void notifyTimerFinished() {
         stopMetroIfRunning();
         Exercise exercise = getSelectedExercise();
+        exercise.resetRemainingTime();
         setExerciseForTimer(getSelectedExercise());
         Toast.makeText(this, "Done!", Toast.LENGTH_SHORT).show();
     }
 
+    private void createBeatSpinner() {
+        Exercise exercise = getSelectedExercise();
+
+        spinner = (Spinner) findViewById(R.id.time_sig_spinner);
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this,
+                R.array.time_sigs, android.R.layout.simple_spinner_item);
+        // Specify the layout to use when the list of choices appears
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(spinnerAdapter);
+
+        spinner.setSelection(exercise.getMeasure() - 1);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                // derive the measure from the selected item string
+                String measureStr = (String)parent.getItemAtPosition(position);
+                measureStr = measureStr.substring(0, 1);
+                int measure = Integer.parseInt(measureStr);
+                Exercise exercise = getSelectedExercise();
+                exercise.setMeasure(measure);
+                metro.updateMeasure();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    private void setButtonListeners() {
+
+        // TIMER BUTTONS
+
+        timerPlayButton = (ImageButton)findViewById(R.id.timer_play_button);
+        timerPlayButton.setOnClickListener(this);
+
+        ImageButton timerResetButton = (ImageButton)findViewById(R.id.timer_reset_button);
+        timerResetButton.setOnClickListener(this);
+
+        // long press on reset button pauses timer and resets to start time
+        timerResetButton.setOnLongClickListener(new View.OnLongClickListener() {
+
+            @Override
+            public boolean onLongClick(View v) {
+                if (timer.isCounting()){
+                    timer.cancelTimer();
+                }
+
+                Exercise exercise = getSelectedExercise();
+                exercise.resetRemainingTime();
+                setExerciseForTimer(exercise);
+                return true;
+            }
+        });
+
+        Button timerSetButton = (Button)findViewById(R.id.timer_set_button);
+        timerSetButton.setOnClickListener(this);
+
+        // METRONOME BUTTONS
+
+        ImageButton metroPlayButton = (ImageButton)findViewById(R.id.metro_play_button);
+        metroPlayButton.setOnClickListener(this);
+
+        ImageButton plus5Button = (ImageButton)findViewById(R.id.plus5_button);
+        plus5Button.setOnClickListener(this);
+
+        ImageButton plus1Button = (ImageButton)findViewById(R.id.plus1_button);
+        plus1Button.setOnClickListener(this);
+
+        ImageButton minus1Button = (ImageButton)findViewById(R.id.minus1_button);
+        minus1Button.setOnClickListener(this);
+
+        ImageButton minus5Button = (ImageButton)findViewById(R.id.minus5_button);
+        minus5Button.setOnClickListener(this);
+
+        Button metroSoundButton = (Button)findViewById(R.id.metro_sound_button);
+        metroSoundButton.setOnClickListener(this);
+
+    }
 
     private void createSampleExercises() {
-        exerciseList.add(new Exercise("Bb scales asc/desc", 65, 4000));
-        exerciseList.add(new Exercise("Am arpeggios", 80, 900000));
-        exerciseList.add(new Exercise("Am scales asc/desc", 88, 300000));
-        exerciseList.add(new Exercise("Turkey in the straw", 120, 150000));
-        exerciseList.add(new Exercise("Hava Nagila", 145, 150000));
+        exerciseList.add(new Exercise("Bb scale", 65, 1, 3000));
+        exerciseList.add(new Exercise("Em arpeggios", 80, 1,900000));
+        exerciseList.add(new Exercise("Em pentatonic scale", 88, 1, 300000));
+        exerciseList.add(new Exercise("Minuet in G", 120, 3,150000));
+        exerciseList.add(new Exercise("Hava Nagila", 145, 2, 150000));
+        exerciseList.add(new Exercise("All of me in C", 110, 4, 240000));
     }
 
 }

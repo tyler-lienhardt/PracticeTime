@@ -68,7 +68,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
         @Override
         public void onClick(View v) {
 
-            //notifying to change view to selected state, changing colors
+            //notifying to change view state to 'selected', changing colors
             notifyItemChanged(selectedPos);
             selectedPos = getLayoutPosition();
             notifyItemChanged(selectedPos);
@@ -100,6 +100,7 @@ public class ExerciseAdapter extends RecyclerView.Adapter<ExerciseAdapter.ViewHo
             intent.putExtra("name", exercise.getName());
             intent.putExtra("startTime", exercise.getStartTime());
             intent.putExtra("tempo", exercise.getTempo());
+            intent.putExtra("measure", exercise.getMeasure());
 
             ((Activity) context).startActivityForResult(intent, MainActivity.EDIT_EXERCISE_REQUEST_CODE);
 

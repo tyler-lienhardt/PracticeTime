@@ -24,6 +24,7 @@ public class EditActivity extends AppCompatActivity {
     private EditText nameField;
     private EditText timeField;
     private EditText tempoField;
+    private EditText measureField;
 
     private ArrayList<Recording> recordingList = new ArrayList<Recording>();
 
@@ -55,7 +56,9 @@ public class EditActivity extends AppCompatActivity {
         tempoField = findViewById(R.id.edit_tempo_field);
         tempoField.setText(String.valueOf(intent.getIntExtra("tempo", -1)));
 
-        //FIXME Sample recordings
+        measureField = findViewById(R.id.edit_measure_field);
+        measureField.setText(String.valueOf(intent.getIntExtra("measure", -1)));
+
         createSampleRecordings();
 
         //RECORDING RECYCLER VIEW
@@ -94,16 +97,16 @@ public class EditActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(EditActivity.this, MainActivity.class);
 
-
                 intent.putExtra("name", nameField.getText().toString());
-
                 long time = Timer.stringToTime(timeField.getText().toString());
                 intent.putExtra("time", time);
-
                 intent.putExtra("tempo", Integer.valueOf(tempoField.getText().toString()).intValue());
+                intent.putExtra("measure", Integer.valueOf(measureField.getText().toString()).intValue());
 
                 setResult(MainActivity.EDIT_EXERCISE_RESULT_SAVE, intent);
+                Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
                 finish();
+                return true;
 
             default:
                 return true;
@@ -112,10 +115,23 @@ public class EditActivity extends AppCompatActivity {
     }
 
     public void createSampleRecordings() {
-        Recording rec1 = new Recording("recording 1");
-        Recording rec2 = new Recording("recording 2");
+        Recording rec1 = new Recording("Recording 1", "5/1/18");
+        Recording rec2 = new Recording("Recording 2", "5/2/18");
+        Recording rec3 = new Recording("Recording 3", "5/2/18");
+        Recording rec4 = new Recording("Recording 4", "5/3/18");
+        Recording rec5 = new Recording("Recording 5", "5/4/18");
+        Recording rec6 = new Recording("Recording 6", "5/4/18");
+        Recording rec7 = new Recording("Recording 7", "5/5/18");
+        Recording rec8 = new Recording("Recording 8", "5/7/18");
 
         recordingList.add(rec1);
         recordingList.add(rec2);
+        recordingList.add(rec3);
+        recordingList.add(rec4);
+        recordingList.add(rec5);
+        recordingList.add(rec6);
+        recordingList.add(rec7);
+        recordingList.add(rec8);
+
     }
 }

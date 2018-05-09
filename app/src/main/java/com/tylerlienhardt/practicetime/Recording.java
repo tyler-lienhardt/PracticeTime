@@ -7,9 +7,11 @@ package com.tylerlienhardt.practicetime;
 public class Recording {
 
     String name;
+    String date;
 
-    public Recording (String name) {
+    public Recording (String name, String date) {
         this.name = name;
+        this.date = date;
     }
 
     public String getName() {
@@ -18,6 +20,10 @@ public class Recording {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDateString() {
+        return date;
     }
 
 }

@@ -27,7 +27,7 @@
             android:name=".EditActivity"
             android:label="@string/title_activity_edit"
             android:parentActivityName="com.tylerlienhardt.practicetime.MainActivity"
-            android:windowSoftInputMode="stateHidden"
+            android:windowSoftInputMode="adjustPan"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
     </application>
 

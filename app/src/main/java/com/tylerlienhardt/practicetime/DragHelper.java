@@ -7,7 +7,6 @@ import android.support.v7.widget.helper.ItemTouchHelper;
  * Created by Tyler on 4/13/2018.
  */
 
-//TODO question, what is a callback?
 public class DragHelper extends ItemTouchHelper.Callback{
 
     private ActionCompletionContract contract;
@@ -19,7 +18,6 @@ public class DragHelper extends ItemTouchHelper.Callback{
     @Override
     public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
 
-        //TODO question: what is this line of code doing?
         int dragFlags = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
 
         return makeMovementFlags(dragFlags, 0);

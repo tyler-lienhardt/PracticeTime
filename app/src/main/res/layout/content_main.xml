@@ -289,7 +289,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="right"
                     android:layout_marginBottom="0dp"
-                    android:layout_marginLeft="15dp"
+                    android:layout_marginLeft="0dp"
                     android:layout_marginRight="15dp"
                     android:layout_marginTop="0dp"
                     android:layout_weight="10"

@@ -10,13 +10,15 @@ public class Exercise {
     private String timeDisplay;
 
     private int tempo;
+    private int measure;
 
     private long startTime;
     private long remainingTime;
 
-    public Exercise(String name, int tempo, long startTime) {
+    public Exercise(String name, int tempo, int measure, long startTime) {
         this.name = name;
         this.tempo = tempo;
+        this.measure = measure;
         this.startTime = startTime;
         this.remainingTime = startTime;
     }
@@ -62,6 +64,14 @@ public class Exercise {
 
     public void changeTempo(int change) {
         tempo = tempo + change;
+    }
+
+    public int getMeasure() {
+        return measure;
+    }
+
+    public void setMeasure(int measure){
+        this.measure = measure;
     }
 
     public long getRemainingTime() {
