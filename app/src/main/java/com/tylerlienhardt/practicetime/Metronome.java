@@ -38,12 +38,10 @@ public class Metronome extends Thread{
         // sets the rest of the parameters deriving from exercise
         setExercise(exercise);
 
-        audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-
         tickPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);
 
-        lowTickID = tickPool.load(context, R.raw.seiko_low, MAX_PRIORITY);
-        highTickID = tickPool.load(context, R.raw.seiko_high, MAX_PRIORITY);
+        lowTickID = tickPool.load(context, R.raw.seiko_low, 10);
+        highTickID = tickPool.load(context, R.raw.seiko_high, 10);
         
         metroPlayButton = ((Activity) context).findViewById(R.id.metro_play_button);
 

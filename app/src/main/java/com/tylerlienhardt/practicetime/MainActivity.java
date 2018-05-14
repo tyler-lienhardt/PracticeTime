@@ -1,6 +1,7 @@
 package com.tylerlienhardt.practicetime;
 
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -117,6 +118,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.timer_set_button :
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+                builder.setMessage("Coming soon!")
+                        .setTitle("Set New Start Time");
+
+                AlertDialog dialog = builder.create();
+
+                dialog.show();
+
                 break;
 
             //METRO BUTTONS
@@ -157,6 +168,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.metro_sound_button :
+                AlertDialog.Builder soundButtonBuilder = new AlertDialog.Builder(this);
+
+                soundButtonBuilder.setMessage("Coming soon!")
+                        .setTitle("Change Metronome Sound");
+
+                AlertDialog soundButtonDialog = soundButtonBuilder.create();
+
+                soundButtonDialog.show();
+
                 break;
 
             default :
@@ -363,9 +383,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void createSampleExercises() {
-        exerciseList.add(new Exercise("Bb scale", 65, 1, 3000));
+        exerciseList.add(new Exercise("Bb scale", 65, 1, 300000));
         exerciseList.add(new Exercise("Em arpeggios", 80, 1,900000));
-        exerciseList.add(new Exercise("Em pentatonic scale", 88, 1, 300000));
+        exerciseList.add(new Exercise("Em pentatonic scale", 88, 1, 3000));
         exerciseList.add(new Exercise("Minuet in G", 120, 3,150000));
         exerciseList.add(new Exercise("Hava Nagila", 145, 2, 150000));
         exerciseList.add(new Exercise("All of me in C", 110, 4, 240000));

@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
+import android.media.AudioManager;
 import android.media.AudioTrack;
 import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.net.Uri;
 import android.os.CountDownTimer;
 import android.widget.ImageButton;
@@ -28,6 +30,9 @@ public class Timer extends CountDownTimer {
     private ImageButton timerPlayButton;
 
     MediaPlayer dingPlayer;
+    int dingID;
+
+    SoundPool dingPool;
 
     public Timer (long StartTime, Exercise exercise, Context context) {
         super(StartTime, 500);
@@ -40,6 +45,8 @@ public class Timer extends CountDownTimer {
 
         dingPlayer = MediaPlayer.create(context, R.raw.ding);
 
+        dingPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+        dingID = dingPool.load(context, R.raw.ding, 10);
     }
 
     public void startTimer() {
@@ -64,7 +71,7 @@ public class Timer extends CountDownTimer {
     @Override
     public void onFinish() {
         timerDisplay.setText("0:00");
-        dingPlayer.start();
+        dingPool.play(dingID, 1, 1, 10, 0, 1);
 
         ((MainActivity) context).notifyTimerFinished();
     }
